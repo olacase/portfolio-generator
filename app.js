@@ -1,11 +1,8 @@
-const inquirer = require('inquirer');
 const fs = require('fs');
+const inquirer = require('inquirer');
+const generatePage = require('./src/page-template');
 
-const generatePage = require('./src/page-template.js');
-
-
-inquirer
-const promptUser = () =>{
+const promptUser = () => {
   return inquirer.prompt([
     {
       type: 'input',
@@ -47,17 +44,20 @@ const promptUser = () =>{
     }
   ]);
 };
- 
+
 const promptProject = portfolioData => {
   console.log(`
-  =================
-  Add a New Project
-  =================
-  `);
+=================
+Add a New Project
+=================
+`);
+
+  // If there's no 'projects' array property, create one
   if (!portfolioData.projects) {
     portfolioData.projects = [];
   }
-    return inquirer.prompt([
+  return inquirer
+    .prompt([
       {
         type: 'input',
         name: 'name',
@@ -116,30 +116,24 @@ const promptProject = portfolioData => {
         default: false
       }
     ])
-      .then(projectData => {
-        portfolioData.projects.push(projectData);
-        if (projectData.confirmAddProject) {
-          return promptProject(portfolioData);
-        } else {
-          return portfolioData;
-        }
-      });
-  };
+    .then(projectData => {
+      portfolioData.projects.push(projectData);
+      if (projectData.confirmAddProject) {
+        return promptProject(portfolioData);
+      } else {
+        return portfolioData;
+      }
+    });
+};
 
-  promptUser()
+promptUser()
   .then(promptProject)
   .then(portfolioData => {
     console.log(portfolioData);
-    // will be uncommented in lesson 4
-    // const pageHTML = generatePage(portfolioData);
-    // fs.writeFile('./index.html', pageHTML, err => {
-    //   if (err) throw new Error(err);
-    //   console.log('Page created! Check out index.html in this directory to see it!');
-    // });
+    
+    const pageHTML = generatePage(portfolioData);
+    fs.writeFile('./index.html', pageHTML, err => {
+      if (err) throw new Error(err);
+      // console.log('Page created! Check out index.html in this directory to see it!');
+    });
   });
-
-
-
-
-
-
